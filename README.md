@@ -2,6 +2,12 @@
 
 Preview and edit your Home Assistant dashboards at fixed LCD and mobile viewport sizes, directly inside Home Assistant.
 
+![LCD preview with fictional demo data](docs/images/lcd-demo.jpg)
+
+![Mobile preview with fictional demo data](docs/images/mobile-demo.jpg)
+
+Screenshots use a fictional demonstration page; no private installation data is shown.
+
 **Early beta: v0.1.0-beta.1.** The original standalone editor has been tested on the author's installation. The HACS wrapper and dashboard picker are new; feedback from other installations is welcome. This is a custom HACS repository, not an entry in the default HACS catalog.
 
 ## What it does
