@@ -55,5 +55,8 @@ class HAScreenStudio extends HTMLElement {
   static getStubConfig() { return {}; }
 }
 if (!customElements.get('ha-screen-studio')) customElements.define('ha-screen-studio', HAScreenStudio);
+// The integration loads a distinct tag, avoiding collisions with older HACS cards.
+class HAScreenStudioPanel extends HAScreenStudio {}
+if (!customElements.get('ha-screen-studio-panel')) customElements.define('ha-screen-studio-panel', HAScreenStudioPanel);
 window.customCards ||= [];
 if (!window.customCards.some(card => card.type === 'ha-screen-studio')) window.customCards.push({ type: 'ha-screen-studio', name: 'HA Screen Studio', description: 'Preview and edit dashboards at LCD and mobile viewport sizes.' });
