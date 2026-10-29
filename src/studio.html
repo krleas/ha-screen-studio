@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HA Screen Studio by Kopterworx</title>
+  <style>
+    :root { color-scheme: dark; --base:#111318; --panel:#1b1e25; --edge:#3a3f49; --text:#eef1f6; --muted:#aab1bd; --accent:#43bbd9; }
+    * { box-sizing:border-box; }
+    html, body { width:100%; height:100%; margin:0; }
+    body { background:var(--base); color:var(--text); font:14px/1.45 Arial, Helvetica, sans-serif; display:flex; flex-direction:column; overflow:hidden; }
+    .bar { display:flex; flex-direction:column; flex:none; background:var(--panel); border-bottom:1px solid var(--edge); gap:8px; padding:10px 17px; }
+    .top { display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap; }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand b { font-size:16px; letter-spacing:.2px; }
+    .chip { padding:3px 9px; border:1px solid #4a525d; color:#ced7e5; border-radius:20px; white-space:nowrap; font-size:12px; }
+    .controls { display:flex; gap:7px; flex-wrap:wrap; align-items:center; }
+    button, .link { padding:8px 12px; cursor:pointer; background:#292e37; color:var(--text); border:1px solid #515964; border-radius:7px; font-size:13px; text-decoration:none; line-height:1.25; }
+    button:hover, .link:hover { border-color:var(--accent); }
+    button.active { background:#164354; border-color:var(--accent); color:#fff; }
+    button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .sub { display:flex; align-items:center; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:12px; }
+    .sub > span { white-space:nowrap; }
+    .sub button { padding:5px 9px; }
+    .small { font-variant-numeric:tabular-nums; min-width:43px; text-align:center; color:#f0f1f4; }
+    .device-sizes { margin-left:auto; display:flex; gap:18px; flex-wrap:wrap; }
+    .device-toggle { display:flex; gap:6px; align-items:center; }
+    .dimensions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:7px; }
+    .dimensions label { display:flex; align-items:center; gap:5px; }
+    input[type=number] { background:#0d1014; color:var(--text); border:1px solid #65707d; border-radius:5px; padding:4px 6px; width:75px; }
+    .note { margin:0; color:#aebccc; font-size:12px; }
+    .stage { flex:1; min-height:0; overflow:auto; padding:16px; background:repeating-conic-gradient(#141820 0% 25%, #11151b 0% 50%) 0 0/24px 24px; }
+    .mount { margin:0 auto; position:relative; flex:none; }
+    .screen { position:absolute; top:0; left:0; transform-origin:top left; background:black; border:0; box-shadow:0 0 0 1px #718092, 0 6px 38px #000b; }
+    iframe { width:100%; height:100%; border:0; display:block; background:#090b0c; }
+    .footer { padding:7px 17px; flex:none; background:#181a20; color:var(--muted); font-size:12px; border-top:1px solid var(--edge); }
+    @media (max-width:650px) { .bar {padding:9px;} .stage {padding:8px;} .brand b {font-size:13px;} .note {display:none;} }
+
+    body { font-family: "Segoe UI", Arial, sans-serif; }
+    .bar { padding:16px 20px 10px; gap:14px; background:#171c24; }
+    .top { gap:16px; }
+    .brand { gap:12px; }
+    .brand > .icon { width:28px; height:28px; color:var(--accent); }
+    .brand b { display:block; font-size:17px; font-weight:600; letter-spacing:.1px; }
+    .byline { display:block; font-size:11px; color:var(--muted); margin-top:1px; }
+    .chip { font-variant-numeric:tabular-nums; background:#111720; border-color:#344251; }
+    button, .link { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:7px 11px; border-color:#3d4857; background:#222b37; font:500 12px/1.2 "Segoe UI",Arial,sans-serif; white-space:nowrap; }
+    button:hover, .link:hover { background:#2a3745; }
+    button.active { background:#153d4b; border-color:#3c9eb6; }
+    .icon { width:16px; height:16px; flex:none; }
+    .settings { display:flex; flex-wrap:wrap; gap:16px 24px; border-top:1px solid #2b3441; padding-top:12px; }
+    .setting-group { display:flex; flex-direction:column; gap:7px; min-width:0; }
+    .group-label { font-size:10px; font-weight:600; letter-spacing:1.2px; color:#aab8c9; }
+    .unit { color:#738499; margin-left:5px; font-size:9px; }
+    .setting-row { display:flex; gap:6px; align-items:center; min-height:36px; }
+    .dimensions { margin:0; flex-wrap:nowrap; }
+    .dimensions label { display:flex; gap:6px; align-items:center; color:#8e9fb2; font-size:11px; }
+    input[type=number] { height:36px; width:72px; padding:6px 7px; border:1px solid #3d4857; border-radius:7px; font:13px "Segoe UI",Arial,sans-serif; font-variant-numeric:tabular-nums; }
+    .times { font-size:13px; color:#65758a; }
+    .square { width:34px; padding:0; font-size:18px; }
+    .percent-field { position:relative; display:flex; align-items:center; }
+    .percent-field input { width:77px; padding-right:23px; appearance:textfield; -moz-appearance:textfield; }
+    .percent-field input::-webkit-inner-spin-button, .percent-field input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    .percent-field > span { position:absolute; right:9px; color:#8e9fb2; font-size:12px; pointer-events:none; }
+    .status-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:6px 16px; font-size:11px; color:#9bb8c7; }
+    .note { font-size:11px; color:#7e8ea1; }
+    .footer { font-size:11px; padding:7px 20px; background:#141a22; color:#8192a6; }
+    @media (max-width:650px) { .bar { padding:10px; gap:10px; } .settings { gap:12px 18px; } .brand { flex-wrap:wrap; } .controls { gap:5px; } .chip { font-size:10px; } .footer { padding:6px 10px; } }
+    .preset-group { margin-left:auto; }
+    .preset-buttons { flex-wrap:wrap; }
+    @media (max-width:1100px) { .preset-group { margin-left:0; } }
+    .custom-presets { display:flex; flex-wrap:wrap; align-items:center; gap:7px; border-top:1px solid #2b3441; padding-top:10px; }
+    .custom-presets .group-label { margin-right:5px; }
+    select { min-height:36px; max-width:260px; padding:6px 10px; background:#111720; color:var(--text); border:1px solid #3d4857; border-radius:7px; font:12px "Segoe UI",Arial,sans-serif; }
+    select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    [hidden] { display:none !important; }
+    body.studio-fullscreen .bar, body.studio-fullscreen .footer { display:none; }
+    body.studio-fullscreen .stage { padding:16px; }
+    #exitFullscreen { position:fixed; top:10px; right:12px; z-index:10; opacity:.65; }
+    #exitFullscreen:hover, #exitFullscreen:focus { opacity:1; }
+    .custom-presets .status-row { margin-left:auto; justify-content:flex-end; text-align:right; gap:5px 18px; }
+    @media (max-width:900px) { .custom-presets .status-row { flex-basis:100%; } }
+    .dashboard-picker { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+    input[type=text] { background:#111720; color:var(--text); border:1px solid #3d4857; border-radius:7px; padding:8px 10px; min-height:36px; width:210px; font:12px "Segoe UI",Arial,sans-serif; }
+    #dashboardSelect { max-width:220px; }
+    #emptyState { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center; background:#111720; color:#aab8c9; }
+    #emptyState b { font-size:32px; color:#eef1f6; }
+    #emptyState p { font-size:18px; max-width:500px; }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="top">
+      <div class="brand"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><div><b>HA Screen Studio</b><span class="byline">by Kopterworx</span></div><span class="chip" id="viewportLabel">LCD · 1920 × 1200</span></div>
+      <div class="controls">
+        <button type="button" id="preview" class="active" aria-pressed="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>Preview</span></button>
+        <button type="button" id="toggleHaMenu" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="haMenuLabel">HA top bar: OFF</span></button>
+        <button type="button" id="toggleHaSidebar" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg><span id="haSidebarLabel">HA left bar: OFF</span></button>
+        <button type="button" id="edit" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6Z M14 5l5 5"/></svg><span>Edit cards</span></button>
+        <button type="button" id="refresh" title="Reload the dashboard"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1"/></svg><span>Refresh</span></button>
+        <a class="link" id="normalHa" href="#" aria-disabled="true" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg><span>Open in HA</span></a>
+        <button type="button" id="fullscreen" title="Hide Studio controls; press Esc to return"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg><span>Fullscreen</span></button>
+      </div>
+    </div>
+    <div class="settings">
+      <section class="setting-group zoom-group" aria-label="Preview zoom">
+        <span class="group-label">ZOOM</span>
+        <div class="setting-row">
+          <button type="button" id="fit" class="active"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg><span>Fit to window</span></button>
+          <button type="button" id="minus" aria-label="Zoom out" class="square"><span>−</span></button>
+          <label class="percent-field"><input type="number" id="percent" min="20" max="150" step="1" value="100" aria-label="Zoom percentage"><span>%</span></label>
+          <button type="button" id="plus" aria-label="Zoom in" class="square"><span>+</span></button>
+        </div>
+      </section>
+      <section class="setting-group" aria-label="Preview device">
+        <span class="group-label">DEVICE</span>
+        <div class="setting-row device-toggle" role="group" aria-label="Device">
+          <button type="button" id="deviceLcd" class="active" aria-pressed="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>LCD</span></button>
+          <button type="button" id="devicePhone" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/></svg><span>Mobile</span></button>
+          <button type="button" id="rotate" title="Swap viewport width and height"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7V3h-4M20 3l-5 5"/><rect x="3" y="8" width="10" height="13" rx="2"/><path d="M17 11a7 7 0 0 1-1 10"/></svg><span>Rotate</span></button>
+        </div>
+      </section>
+      <section class="setting-group" aria-label="LCD dimensions">
+        <span class="group-label">LCD SIZE <span class="unit">PX</span></span>
+        <div class="setting-row dimensions">
+          <label><span>W</span><input type="number" id="width" min="320" max="4000" value="1920" aria-label="LCD width"></label>
+          <span class="times">×</span>
+          <label><span>H</span><input type="number" id="height" min="240" max="3000" value="1200" aria-label="LCD height"></label>
+          <button type="button" id="applySize" ><span>Apply</span></button>
+        </div>
+      </section>
+      <section class="setting-group" aria-label="Mobile dimensions">
+        <span class="group-label">MOBILE SIZE <span class="unit">PX</span></span>
+        <div class="setting-row dimensions">
+          <label><span>W</span><input type="number" id="phoneWidth" min="240" max="4000" value="412" aria-label="Mobile width"></label>
+          <span class="times">×</span>
+          <label><span>H</span><input type="number" id="phoneHeight" min="240" max="4000" value="915" aria-label="Mobile height"></label>
+          <button type="button" id="applyPhoneSize" ><span>Apply</span></button>
+        </div>
+      </section>
+      <section class="setting-group preset-group" aria-label="Screen size presets">
+        <span class="group-label">PRESETS</span>
+        <div class="setting-row preset-buttons">
+          <button type="button" id="preset1080" title="LCD · 1920 × 1080 px">1920 × 1080</button>
+          <button type="button" id="preset1200" title="LCD · 1920 × 1200 px">1920 × 1200</button>
+          <button type="button" id="presetShelly" title="Shelly Wall Display XL · 1280 × 752 px">Shelly XL</button>
+          <button type="button" id="presetEmel" title="EMEL S10 · 1920 × 1200 px">EMEL S10</button>
+          <button type="button" id="presetSamsung" title="Approximate mobile viewport · 412 × 915 CSS px">Samsung</button>
+          <button type="button" id="presetIphone" title="Approximate mobile viewport · 393 × 852 CSS px">iPhone</button>
+        </div>
+      </section>
+    </div>
+    <div class="dashboard-picker" role="group" aria-label="Choose your dashboard">
+      <span class="group-label">DASHBOARD</span>
+      <select id="dashboardSelect" aria-label="Available dashboards"><option value="">Choose a dashboard</option></select>
+      <input type="text" id="dashboardPath" placeholder="/lovelace/home" aria-label="Dashboard path">
+      <button type="button" id="openDashboard">Open</button>
+      <span id="dashboardHint" class="note">Choose your dashboard or enter its path.</span>
+    </div>
+    <div class="custom-presets" role="group" aria-label="Custom presets">
+      <span class="group-label">CUSTOM PRESETS</span>
+      <select id="customPreset" aria-label="Saved custom preset"><option value="">Select a saved preset</option></select>
+      <button type="button" id="loadCustom">Load</button>
+      <button type="button" id="saveCustom">+ Save current</button>
+      <button type="button" id="deleteCustom">Delete</button>
+      <div class="status-row"><span id="modeInfo">Dashboard preview</span><p class="note">Editing uses the Home Assistant editor. Switch to Preview to check the final layout.</p></div>
+    </div>
+  </header>
+  <main id="stage" class="stage">
+    <div id="mount" class="mount">
+      <div id="screen" class="screen">
+        <div id="emptyState"><b>Your dashboards. Any screen.</b><p>Choose a dashboard above to start. Your selection is saved in this browser.</p></div>
+        <iframe id="dashboard" title="Home Assistant dashboard" src="about:blank" allow="fullscreen"></iframe>
+      </div>
+    </div>
+  </main>
+  <footer class="footer" id="viewportInfo"></footer>
+  <button type="button" id="exitFullscreen" hidden>Exit fullscreen · Esc</button>
+  <script>
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      const stage = $('stage'), mount = $('mount'), screen = $('screen'), frame = $('dashboard');
+      let width = 1920, height = 1200, scale = 1, mode = 'preview', fit = true;
+      const DEVICE_KEY = 'ha-screen-studio-devices';
+      let device = 'lcd';
+      const sizes = { lcd: { width: 1920, height: 1200 }, phone: { width: 412, height: 915 } };
+      const validSize = (size, kind) => size && Number.isInteger(size.width) && Number.isInteger(size.height)
+        && size.width >= (kind === 'lcd' ? 320 : 240) && size.width <= 4000
+        && size.height >= 240 && size.height <= (kind === 'lcd' ? 3000 : 4000);
+      try {
+        const saved = JSON.parse(localStorage.getItem(DEVICE_KEY));
+        if (saved) {
+          for (const kind of ['lcd', 'phone']) {
+            if (validSize(saved[kind], kind)) sizes[kind] = { width: saved[kind].width, height: saved[kind].height };
+          }
+          if (saved.device === 'lcd' || saved.device === 'phone') device = saved.device;
+        }
+      } catch (_) {}
+      width = sizes[device].width; height = sizes[device].height;
+      $('width').value = sizes.lcd.width;
+      $('height').value = sizes.lcd.height;
+      $('phoneWidth').value = sizes.phone.width;
+      $('phoneHeight').value = sizes.phone.height;
+      const saveDevices = () => {
+        try { localStorage.setItem(DEVICE_KEY, JSON.stringify({ device, ...sizes })); } catch (_) {}
+      };
+      const presets = {
+        preset1080: { device: 'lcd', width: 1920, height: 1080 },
+        preset1200: { device: 'lcd', width: 1920, height: 1200 },
+        presetShelly: { device: 'lcd', width: 1280, height: 752 },
+        presetEmel: { device: 'lcd', width: 1920, height: 1200 },
+        presetSamsung: { device: 'phone', width: 412, height: 915 },
+        presetIphone: { device: 'phone', width: 393, height: 852 }
+      };
+      const CUSTOM_KEY = 'ha-screen-studio-custom-presets';
+      let customPresets = {};
+      try {
+        const saved = JSON.parse(localStorage.getItem(CUSTOM_KEY));
+        if (saved && typeof saved === 'object') {
+          for (const [id, preset] of Object.entries(saved)) {
+            if (/^custom-[a-z0-9-]+$/.test(id) && preset && typeof preset.name === 'string'
+              && ['lcd', 'phone'].includes(preset.device) && validSize(preset, preset.device)) {
+              customPresets[id] = { name: preset.name.slice(0, 60), device: preset.device, width: preset.width, height: preset.height };
+              presets[id] = customPresets[id];
+            }
+          }
+        }
+      } catch (_) {}
+      const activePresets = { lcd: null, phone: null };
+      const zoomKey = () => activePresets[device] || device;
+      const ZOOM_KEY = 'ha-screen-studio-zoom';
+      const zooms = { lcd: { fit: true, scale: 1 }, phone: { fit: true, scale: 1 } };
+      const validZoom = z => z && typeof z.fit === 'boolean' && Number.isFinite(z.scale)
+        && z.scale >= (z.fit ? .12 : .2) && z.scale <= 1.5;
+      try {
+        const saved = JSON.parse(localStorage.getItem(ZOOM_KEY));
+        if (validZoom(saved)) {
+          // Migrate older shared zoom settings to separate device profiles.
+          for (const kind of ['lcd', 'phone']) zooms[kind] = { fit: saved.fit, scale: saved.scale };
+        } else if (saved) {
+          for (const kind of ['lcd', 'phone', ...Object.keys(presets)]) {
+            if (validZoom(saved[kind])) zooms[kind] = { fit: saved[kind].fit, scale: saved[kind].scale };
+          }
+          const savedPresets = saved.activePresets || { lcd: saved.activePreset };
+          for (const kind of ['lcd', 'phone']) {
+            const id = savedPresets[kind];
+            if (Object.prototype.hasOwnProperty.call(presets, id)) {
+              const preset = presets[id];
+              if (preset.device === kind && preset.width === sizes[kind].width && preset.height === sizes[kind].height) activePresets[kind] = id;
+            }
+          }
+        }
+      } catch (_) {}
+      for (const id of Object.keys(presets)) {
+        if (!zooms[id]) zooms[id] = { ...zooms[presets[id].device] };
+      }
+      fit = zooms[zoomKey()].fit; scale = zooms[zoomKey()].scale;
+      const saveZoom = () => {
+        zooms[zoomKey()] = { fit, scale };
+        try { localStorage.setItem(ZOOM_KEY, JSON.stringify({ ...zooms, activePresets })); } catch (_) {}
+      };
+
+      const MENU_KEY = 'ha-screen-studio-ha-menu';
+      let showHaMenu = false;
+      try { showHaMenu = localStorage.getItem(MENU_KEY) === 'true'; } catch (_) {}
+      const SIDEBAR_KEY = 'ha-screen-studio-ha-sidebar';
+      let showHaSidebar = false;
+      try { showHaSidebar = localStorage.getItem(SIDEBAR_KEY) === 'true'; } catch (_) {}
+      const updateMenuButton = () => {
+        $('haSidebarLabel').textContent = 'HA left bar: ' + (showHaSidebar ? 'ON' : 'OFF');
+        $('toggleHaSidebar').classList.toggle('active', showHaSidebar);
+        $('toggleHaSidebar').setAttribute('aria-pressed', String(showHaSidebar));
+        $('haMenuLabel').textContent = 'HA top bar: ' + (showHaMenu ? 'ON' : 'OFF');
+        $('toggleHaMenu').classList.toggle('active', showHaMenu);
+        $('toggleHaMenu').setAttribute('aria-pressed', String(showHaMenu));
+      };
+      const frameQuery = () => {
+        if (mode === 'edit' || (showHaMenu && showHaSidebar)) return '?disable_km';
+        if (showHaMenu) return '?hide_sidebar';
+        if (showHaSidebar) return '?hide_header';
+        return '?kiosk';
+      };
+      updateMenuButton();
+
+      // Only navigate to local dashboard paths; never to APIs, settings or this editor.
+      const VIEW_KEY = 'ha-screen-studio-current-view';
+      const APP_ORIGIN = new URL(document.baseURI).origin;
+      const validView = p => {
+        if (typeof p !== 'string' || !/^\/[a-zA-Z0-9_%~-]+(?:\/[a-zA-Z0-9_%~-]+)*\/?$/.test(p)) return false;
+        let decoded;
+        try { decoded = decodeURIComponent(p); } catch (_) { return false; }
+        if (/%2f|%5c/i.test(p)) return false;
+        if (decoded !== p && /[\\\\?#]/.test(decoded)) return false;
+        if (decoded.split('/').some(part => part === '.' || part === '..')) return false;
+        return !/^\/(?:api|auth|local|hacsfiles|static|config|developer-tools|screen-studio|ha-screen-studio|frontend_latest|frontend_es5)(?:\/|$)/.test(decoded);
+      };
+      const requestedView = new URLSearchParams(location.search).get('view');
+      let savedView = null;
+      try { savedView = localStorage.getItem(VIEW_KEY); } catch (_) {}
+      let currentView = [requestedView, savedView].find(validView) || null;
+      const selectedView = () => {
+        try {
+          const path = frame.contentWindow.location.pathname;
+          if (validView(path)) currentView = path;
+        } catch (_) {}
+        if (currentView) {
+          try { localStorage.setItem(VIEW_KEY, currentView); } catch (_) {}
+          $('normalHa').href = currentView + '?disable_km';
+          $('normalHa').removeAttribute('aria-disabled');
+          $('dashboardPath').value = currentView;
+        }
+        return currentView;
+      };
+      const loadDashboard = () => {
+        const path = selectedView();
+        if (path) frame.src = path + frameQuery();
+      };
+      const chooseDashboard = path => {
+        if (!validView(path)) { alert('Enter a local dashboard path, for example /lovelace/home.'); return; }
+        if (mode === 'edit' && !confirm('Save any unsaved changes before switching dashboards. Continue?')) return;
+        currentView = path;
+        try { localStorage.setItem(VIEW_KEY, currentView); } catch (_) {}
+        $('dashboardPath').value = path;
+        $('emptyState').hidden = true;
+        $('normalHa').href = path + '?disable_km';
+        $('normalHa').removeAttribute('aria-disabled');
+        frame.src = path + frameQuery();
+      };
+      frame.addEventListener('load', selectedView);
+      $('normalHa').addEventListener('click', event => { if (!selectedView()) event.preventDefault(); });
+      $('openDashboard').addEventListener('click', () => chooseDashboard($('dashboardPath').value.trim()));
+      $('dashboardPath').addEventListener('keydown', event => { if (event.key === 'Enter') chooseDashboard($('dashboardPath').value.trim()); });
+      $('dashboardSelect').addEventListener('change', () => {
+        if ($('dashboardSelect').value) chooseDashboard($('dashboardSelect').value);
+      });
+      window.addEventListener('message', event => {
+        if (event.source !== window.parent || event.origin !== APP_ORIGIN || event.data?.type !== 'ha-screen-studio-dashboards' || !Array.isArray(event.data.dashboards)) return;
+        const select = $('dashboardSelect');
+        select.replaceChildren();
+        const placeholder = document.createElement('option');
+        placeholder.value = ''; placeholder.textContent = 'Choose a dashboard';
+        select.append(placeholder);
+        for (const dashboard of event.data.dashboards.slice(0, 200)) {
+          if (!dashboard || !validView(dashboard.path)) continue;
+          const option = document.createElement('option');
+          option.value = dashboard.path;
+          option.textContent = typeof dashboard.title === 'string' ? dashboard.title : dashboard.path;
+          select.append(option);
+        }
+        $('dashboardHint').textContent = 'Choose a dashboard, or enter a view path for a specific page.';
+      });
+      if (window.parent !== window) window.parent.postMessage({ type: 'ha-screen-studio-ready' }, APP_ORIGIN);
+      if (currentView) chooseDashboard(currentView);
+
+      const fitScale = () => Math.max(0.12, Math.min(1, (stage.clientWidth - 32) / width, (stage.clientHeight - 32) / height));
+      const draw = () => {
+        if (fit) scale = fitScale();
+        screen.style.width = width + 'px';
+        screen.style.height = height + 'px';
+        screen.style.transform = `scale(${scale})`;
+        mount.style.width = (width * scale) + 'px';
+        mount.style.height = (height * scale) + 'px';
+        $('percent').value = Math.round(scale * 100);
+        $('fit').classList.toggle('active', fit);
+        const label = device === 'lcd' ? 'LCD' : 'Mobile';
+        $('viewportLabel').textContent = label + ' · ' + width + ' × ' + height;
+        $('viewportInfo').textContent = label + ' viewport · ' + width + ' × ' + height + ' CSS px. For mobile, use browser viewport dimensions rather than panel resolution.';
+        for (const kind of ['lcd', 'phone']) {
+          const button = $(kind === 'lcd' ? 'deviceLcd' : 'devicePhone');
+          button.classList.toggle('active', device === kind);
+          button.setAttribute('aria-pressed', String(device === kind));
+        }
+        if (mode === 'preview') $('modeInfo').textContent = 'Preview · Top bar ' + (showHaMenu ? 'ON' : 'OFF') + ' · Left bar ' + (showHaSidebar ? 'ON' : 'OFF') + ' · ' + label;
+      };
+      const setMode = next => {
+        if (next === mode) return;
+        if (mode === 'edit' && !confirm('Save any unsaved changes in Home Assistant before switching modes. Continue?')) return;
+        mode = next;
+        $('edit').classList.toggle('active', mode === 'edit');
+        $('preview').classList.toggle('active', mode === 'preview');
+        $('edit').setAttribute('aria-pressed', String(mode === 'edit'));
+        $('preview').setAttribute('aria-pressed', String(mode === 'preview'));
+        $('modeInfo').textContent = mode === 'edit' ? 'Edit mode · Home Assistant menus enabled' : 'Clean preview · ' + (device === 'lcd' ? 'LCD' : 'Mobile') + '.';
+        draw();
+        loadDashboard();
+      };
+      const toggleHaBar = which => {
+        if (mode === 'edit' && !confirm('Changing the bars reloads the dashboard. Save any unsaved changes first. Continue?')) return;
+        if (which === 'top') showHaMenu = !showHaMenu;
+        else showHaSidebar = !showHaSidebar;
+        mode = 'preview';
+        $('edit').classList.toggle('active', false);
+        $('preview').classList.toggle('active', true);
+        $('edit').setAttribute('aria-pressed', 'false');
+        $('preview').setAttribute('aria-pressed', 'true');
+        try {
+          localStorage.setItem(MENU_KEY, String(showHaMenu));
+          localStorage.setItem(SIDEBAR_KEY, String(showHaSidebar));
+        } catch (_) {}
+        updateMenuButton();
+        draw();
+        loadDashboard();
+      };
+      $('toggleHaMenu').addEventListener('click', () => toggleHaBar('top'));
+      $('toggleHaSidebar').addEventListener('click', () => toggleHaBar('left'));
+      $('preview').addEventListener('click', () => setMode('preview'));
+      $('edit').addEventListener('click', () => setMode('edit'));
+      $('refresh').addEventListener('click', () => {
+        if (mode === 'edit' && !confirm('Refreshing discards unsaved edits. Continue?')) return;
+        loadDashboard();
+      });
+      $('fit').addEventListener('click', () => { fit = true; draw(); saveZoom(); });
+      $('minus').addEventListener('click', () => { fit = false; scale = Math.max(.2, Math.round((scale - .05) * 100) / 100); draw(); saveZoom(); });
+      $('plus').addEventListener('click', () => { fit = false; scale = Math.min(1.5, Math.round((scale + .05) * 100) / 100); draw(); saveZoom(); });
+      $('percent').addEventListener('change', () => {
+        const percent = Number($('percent').value);
+        if (!Number.isFinite(percent) || percent < 20 || percent > 150) { draw(); return; }
+        fit = false;
+        scale = percent / 100;
+        draw();
+        saveZoom();
+      });
+      $('percent').addEventListener('keydown', event => {
+        if (event.key === 'Enter') { event.preventDefault(); $('percent').blur(); }
+      });
+      const setDevice = (kind, preset = activePresets[kind]) => {
+        saveZoom();
+        device = kind;
+        activePresets[kind] = preset;
+        fit = zooms[zoomKey()].fit; scale = zooms[zoomKey()].scale;
+        width = sizes[kind].width; height = sizes[kind].height;
+        draw();
+        saveDevices();
+        saveZoom();
+      };
+      $('deviceLcd').addEventListener('click', () => setDevice('lcd'));
+      $('devicePhone').addEventListener('click', () => setDevice('phone'));
+      const applySize = kind => {
+        const size = {
+          width: Number($(kind === 'lcd' ? 'width' : 'phoneWidth').value),
+          height: Number($(kind === 'lcd' ? 'height' : 'phoneHeight').value)
+        };
+        if (!validSize(size, kind)) { alert('Enter valid screen dimensions in pixels.'); return; }
+        sizes[kind] = size;
+        setDevice(kind, null);
+      };
+      $('applySize').addEventListener('click', () => applySize('lcd'));
+      $('applyPhoneSize').addEventListener('click', () => applySize('phone'));
+      for (const [id, size] of Object.entries(presets).filter(([id]) => !id.startsWith('custom-'))) {
+        $(id).addEventListener('click', () => {
+          const kind = size.device;
+          $(kind === 'lcd' ? 'width' : 'phoneWidth').value = size.width;
+          $(kind === 'lcd' ? 'height' : 'phoneHeight').value = size.height;
+          sizes[kind] = { width: size.width, height: size.height };
+          setDevice(kind, id);
+        });
+      }
+      const syncSizeFields = () => {
+        $('width').value = sizes.lcd.width; $('height').value = sizes.lcd.height;
+        $('phoneWidth').value = sizes.phone.width; $('phoneHeight').value = sizes.phone.height;
+      };
+      $('rotate').addEventListener('click', () => {
+        const size = { width: height, height: width };
+        if (!validSize(size, device)) { alert('The rotated dimensions exceed the supported range.'); return; }
+        // Rotation becomes a custom size so the original preset keeps its zoom.
+        const currentZoom = { fit, scale };
+        sizes[device] = size;
+        setDevice(device, null);
+        fit = currentZoom.fit; scale = currentZoom.scale;
+        syncSizeFields(); draw(); saveZoom();
+      });
+      const renderCustomPresets = (selected = '') => {
+        const select = $('customPreset');
+        select.replaceChildren();
+        const placeholder = document.createElement('option');
+        placeholder.value = ''; placeholder.textContent = 'Select a saved preset';
+        select.append(placeholder);
+        for (const [id, preset] of Object.entries(customPresets)) {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = preset.name + ' · ' + preset.width + ' × ' + preset.height;
+          select.append(option);
+        }
+        select.value = selected;
+        $('loadCustom').disabled = !selected;
+        $('deleteCustom').disabled = !selected;
+      };
+      const saveCustomStorage = () => {
+        try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(customPresets)); return true; }
+        catch (_) { alert('Custom presets could not be saved in this browser.'); return false; }
+      };
+      $('customPreset').addEventListener('change', () => {
+        const selected = $('customPreset').value;
+        $('loadCustom').disabled = !selected; $('deleteCustom').disabled = !selected;
+      });
+      $('saveCustom').addEventListener('click', () => {
+        const name = prompt('Name this preset (device, size and zoom will be saved):', '');
+        if (name === null || !name.trim()) return;
+        saveZoom();
+        const id = 'custom-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        const preset = { name: name.trim().slice(0, 60), device, width, height };
+        customPresets[id] = preset; presets[id] = preset;
+        zooms[id] = { fit, scale };
+        if (!saveCustomStorage()) { delete customPresets[id]; delete presets[id]; delete zooms[id]; return; }
+        activePresets[device] = id;
+        saveZoom(); renderCustomPresets(id);
+      });
+      $('loadCustom').addEventListener('click', () => {
+        const id = $('customPreset').value, preset = customPresets[id];
+        if (!preset) return;
+        sizes[preset.device] = { width: preset.width, height: preset.height };
+        setDevice(preset.device, id);
+        syncSizeFields();
+      });
+      $('deleteCustom').addEventListener('click', () => {
+        const id = $('customPreset').value, preset = customPresets[id];
+        if (!preset || !confirm('Delete custom preset "' + preset.name + '"?')) return;
+        saveZoom();
+        for (const kind of ['lcd', 'phone']) {
+          if (activePresets[kind] === id) {
+            zooms[kind] = { ...zooms[id] }; activePresets[kind] = null;
+          }
+        }
+        delete customPresets[id]; delete presets[id]; delete zooms[id];
+        saveCustomStorage(); saveZoom(); renderCustomPresets();
+      });
+      renderCustomPresets();
+      const applyFullscreen = enabled => {
+        document.body.classList.toggle('studio-fullscreen', enabled);
+        $('exitFullscreen').hidden = !enabled;
+        requestAnimationFrame(draw);
+      };
+      $('fullscreen').addEventListener('click', async () => {
+        applyFullscreen(true);
+        try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }
+        catch (_) { /* Keep the distraction-free view if browser fullscreen is unavailable. */ }
+      });
+      const exitFullscreen = async () => {
+        applyFullscreen(false);
+        try { if (document.fullscreenElement) await document.exitFullscreen(); } catch (_) {}
+      };
+      $('exitFullscreen').addEventListener('click', exitFullscreen);
+      document.addEventListener('fullscreenchange', () => applyFullscreen(Boolean(document.fullscreenElement)));
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') exitFullscreen(); });
+      // In embedded fallback mode, keyboard events belong to the dashboard document.
+      frame.addEventListener('load', () => {
+        try { frame.contentDocument.addEventListener('keydown', event => { if (event.key === 'Escape') exitFullscreen(); }); } catch (_) {}
+      });
+      window.addEventListener('resize', draw);
+      if ('ResizeObserver' in window) new ResizeObserver(draw).observe(stage);
+      draw();
+    })();
+  </script>
+</body>
+</html>
