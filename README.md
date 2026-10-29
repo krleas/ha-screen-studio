@@ -36,7 +36,7 @@ Requires Home Assistant **2026.9 or newer**, HACS and an administrator account.
 
 1. Open HACS → menu → **Custom repositories**.
 2. Add `https://github.com/krleas/ha-screen-studio` with type **Integration**.
-3. Download **HA Screen Studio by Kopterworx**, version **0.2.0-beta.1** or newer. Enable beta versions if needed.
+3. Download **HA Screen Studio by Kopterworx** and select the tagged **v0.2.0-beta.1** release (or a newer beta), rather than `main` or a short commit ID. Use **Need a different version?** in the download dialog if required.
 4. Restart Home Assistant once, then refresh the browser.
 5. Open **Settings → Devices & services → Add integration**. Search for **HA Screen Studio**, select it and confirm.
 6. Open **Screen Studio** in the left sidebar and choose your own dashboard.
@@ -44,6 +44,14 @@ Requires Home Assistant **2026.9 or newer**, HACS and an administrator account.
 No YAML, manually created Studio dashboard, JavaScript resource, IP address or access token is required. The sidebar entry is visible to administrators. Dashboard selection is remembered in this browser; its selector folds away after selection. Use the **Dashboard** button at the end of the toolbar to change it. **Preview** stays first.
 
 HACS downloads the files; the Add integration step enables the sidebar. These are separate steps. See [HACS integration documentation](https://www.hacs.dev/docs/use/repositories/type/integration/).
+
+### Beta update tracking — important for testers
+
+This project currently publishes **pre-releases**. In HACS, enable **Pre-release** for **HA Screen Studio by Kopterworx** so update checks track the tagged beta release. Downloading a beta manually does not necessarily enable beta tracking.
+
+HACS also provides a **Pre-release** switch entity for this repository. If it is disabled, find it under **Settings → Devices & services → Entities**, include disabled entities in the filters, enable that specific entity, then turn its switch on. See [HACS pre-release switch documentation](https://www.hacs.dev/docs/use/entities/switch/).
+
+If an update offers a short commit ID immediately after installing a beta, check this setting first. With beta tracking off and no regular release available, HACS can fall back to the default branch's latest commit. A README change can then look like an update. Do not install `main` just to dismiss that notice; enable beta tracking instead. Studio cannot change a user's HACS update preferences automatically.
 
 ### Upgrading from 0.1 Dashboard/Plugin beta
 
