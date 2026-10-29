@@ -1,0 +1,14 @@
+{
+  "title": "HA Screen Studio by Kopterworx",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up HA Screen Studio",
+        "description": "Add Screen Studio to the Home Assistant sidebar for administrators. No dashboard, YAML, IP address or access token is required. Choose your dashboard when Studio opens."
+      }
+    },
+    "abort": {
+      "already_configured": "Screen Studio is already configured. Open it from the sidebar."
+    }
+  }
+}

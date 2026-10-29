@@ -1,0 +1,13 @@
+{
+  "domain": "ha_screen_studio",
+  "name": "HA Screen Studio by Kopterworx",
+  "codeowners": ["@krleas"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "panel_custom"],
+  "documentation": "https://github.com/krleas/ha-screen-studio",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/krleas/ha-screen-studio/issues",
+  "requirements": [],
+  "version": "0.2.0-beta.1"
+}
