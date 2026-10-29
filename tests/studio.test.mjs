@@ -35,7 +35,11 @@ test('first run requires own dashboard; validates paths; selection survives relo
   assert.equal(alerts.length, 8);
   n.dashboardPath.value = '/my-dashboard/home'; click(n, 'openDashboard');
   assert.equal(n.dashboard.src, '/my-dashboard/home?kiosk');
+  assert.equal(n.dashboardPicker.hidden, true);
+  click(n, 'toggleDashboard');
+  assert.equal(n.dashboardPicker.hidden, false);
   assert.equal(launch(memory).nodes.dashboard.src, '/my-dashboard/home?kiosk');
+  assert.equal(launch(memory).nodes.dashboardPicker.hidden, true);
 });
 test('bar combinations and edit mode preserve the selected page', () => {
   const { nodes: n, location } = launch();
