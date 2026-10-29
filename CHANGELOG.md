@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0-beta.2 — 2026-10-29
+
+Adds an original desktop/mobile icon bundled locally in the integration brand folder (256 and 512 px). Includes clearer beta tracking instructions to prevent default-branch commits being mistaken for beta updates. The integration has now been added successfully on the author's HA installation.
+
 ## 0.2.0-beta.1 — 2026-10-29
 
 - HACS Integration with a single confirmation step and automatic administrator sidebar panel; no manual dashboard or YAML.

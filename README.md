@@ -8,7 +8,7 @@ Preview and edit your Home Assistant dashboards at fixed LCD and mobile viewport
 
 Screenshots use a fictional demonstration page; no private installation data is shown.
 
-**Early beta: v0.2.0-beta.1.** Now packaged as a HACS **Integration** with automatic sidebar setup. The frontend has been tested on the author's installation; the new integration lifecycle has automated contract tests but still needs testing on a real HA installation. This is a custom repository, not a default HACS catalog entry.
+**Early beta: v0.2.0-beta.2.** Now packaged as a HACS **Integration** with automatic sidebar setup. The frontend has been tested on the author's installation; the new integration lifecycle has automated contract tests but still needs testing on a real HA installation. This is a custom repository, not a default HACS catalog entry.
 
 ## What it does
 
@@ -36,7 +36,7 @@ Requires Home Assistant **2026.9 or newer**, HACS and an administrator account.
 
 1. Open HACS → menu → **Custom repositories**.
 2. Add `https://github.com/krleas/ha-screen-studio` with type **Integration**.
-3. Download **HA Screen Studio by Kopterworx** and select the tagged **v0.2.0-beta.1** release (or a newer beta), rather than `main` or a short commit ID. Use **Need a different version?** in the download dialog if required.
+3. Download **HA Screen Studio by Kopterworx** and select the tagged **v0.2.0-beta.2** release (or a newer beta), rather than `main` or a short commit ID. Use **Need a different version?** in the download dialog if required.
 4. Restart Home Assistant once, then refresh the browser.
 5. Open **Settings → Devices & services → Add integration**. Search for **HA Screen Studio**, select it and confirm.
 6. Open **Screen Studio** in the left sidebar and choose your own dashboard.
