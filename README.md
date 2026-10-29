@@ -115,8 +115,12 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 Edit `src/studio.html` and `src/card.js`, rebuild, and commit both generated modules (`dist/ha-screen-studio.js` and `custom_components/ha_screen_studio/www/ha-screen-studio.js`). Python tests use mocked HA APIs; they do not replace a real-instance installation test. The integration is local only and creates no entities.
 
-## Support
+## Support development ❤️
 
-Free and open source under the MIT license. If it helps you, star the repository, test a release or report a useful issue. The GitHub Sponsors application for [krleas](https://github.com/krleas) is pending approval.
+HA Screen Studio is free and open source under the MIT license. If you find it useful, you can help support its development through GitHub Sponsors once the profile is approved. Thank you! ❤️
+
+**GitHub Sponsors is coming soon:** the application for [Kopterworx (@krleas)](https://github.com/krleas) has been submitted for approval. The sponsorship link will be added here when it is available.
+
+You can also support the project by starring this repository, testing a release or reporting a useful issue. Sponsorship is entirely optional; all features remain free.
 
 Created by **Kopterworx**. This community project is not affiliated with Home Assistant, HACS, Shelly, Samsung or Apple.
