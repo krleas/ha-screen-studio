@@ -51,7 +51,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(kwargs['require_admin'])
         self.assertEqual(kwargs['frontend_url_path'], 'ha-screen-studio')
         self.assertEqual(kwargs['webcomponent_name'], 'ha-screen-studio-panel')
-        self.assertIn('?v=0.2.0-beta.1', kwargs['module_url'])
+        self.assertIn('?v=0.2.0-beta.2', kwargs['module_url'])
         self.hass.data['frontend_panels'] = {'ha-screen-studio': types.SimpleNamespace(config=kwargs['config'])}
         await studio.async_unload_entry(self.hass, self.entry)
         frontend.async_remove_panel.assert_called_once_with(self.hass, 'ha-screen-studio')
