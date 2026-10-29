@@ -25,14 +25,26 @@ Studio uses the normal HA editor; it does not provide a separate card editor. Ch
 
 ## Requirements
 
+**Important: install [kiosk-mode](https://github.com/NemesisRE/kiosk-mode) before using Screen Studio. It is required for the clean Preview and the HA top/left-bar controls.** Screen Studio does not install kiosk-mode automatically. Without it, the dashboard and viewport sizing still work, but HA menus remain visible even when Studio shows the bars as OFF. This also applies when accessing HA through Nabu Casa.
+
 - A working Home Assistant installation and an existing dashboard.
 - An up-to-date desktop browser. This beta is intended for desktop dashboard authoring.
 - HACS for the recommended installation method.
-- [kiosk-mode](https://github.com/NemesisRE/kiosk-mode) installed and registered as a dashboard resource for top/left-bar controls. Without it, viewport preview works but the bar buttons cannot hide HA menus.
+- [kiosk-mode](https://github.com/NemesisRE/kiosk-mode) installed and loaded as a dashboard resource — required for full Preview functionality.
 
 ## Install with HACS
 
 Requires Home Assistant **2026.9 or newer**, HACS and an administrator account.
+
+### First: install kiosk-mode
+
+1. In HACS, search for **Kiosk Mode** and download it. Follow its [installation instructions](https://github.com/NemesisRE/kiosk-mode#installation) to confirm the dashboard resource is registered.
+2. Refresh the browser (use a hard refresh if necessary) so the new resource loads. Installing kiosk-mode as a dashboard resource alone does not require an HA Core restart.
+3. Then install Screen Studio below. Studio uses URL flags to control menu visibility; no extra `kiosk_mode` YAML is required for these buttons. Existing kiosk-mode rules can affect the result.
+
+Choose a kiosk-mode version compatible with your HA version: the upstream instructions currently specify **kiosk-mode v14.2.1 for HA 2026.6.0–2026.10.0**, and **v15.0.0 or newer for HA 2026.10.1+**. Check the linked upstream instructions when installing rather than blindly choosing the newest version.
+
+### Then: install Screen Studio
 
 1. Open HACS → menu → **Custom repositories**.
 2. Add `https://github.com/krleas/ha-screen-studio` with type **Integration**.
@@ -65,7 +77,7 @@ The integration does not delete or rewrite existing dashboards, resources or kio
 
 ### Manual installation
 
-Copy the entire `custom_components/ha_screen_studio` folder from this repository to `/config/custom_components/ha_screen_studio`. Restart HA, then follow steps 5–6 above. All runtime files, including `www/ha-screen-studio.js`, must be copied together.
+Install and load kiosk-mode first, as described above. Copy the entire `custom_components/ha_screen_studio` folder from this repository to `/config/custom_components/ha_screen_studio`. Restart HA, then follow steps 5–6 under **Then: install Screen Studio**. All runtime files, including `www/ha-screen-studio.js`, must be copied together.
 
 The legacy `dist/ha-screen-studio.js` card remains available for existing manual setups as `custom:ha-screen-studio`; it is not needed for the integration installation.
 
