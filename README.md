@@ -8,7 +8,7 @@ Preview and edit your Home Assistant dashboards at fixed LCD and mobile viewport
 
 Screenshots use a fictional demonstration page; no private installation data is shown.
 
-**Early beta: v0.1.0-beta.1.** The original standalone editor has been tested on the author's installation. The HACS wrapper and dashboard picker are new; feedback from other installations is welcome. This is a custom HACS repository, not an entry in the default HACS catalog.
+**Early beta: v0.2.0-beta.1.** Now packaged as a HACS **Integration** with automatic sidebar setup. The frontend has been tested on the author's installation; the new integration lifecycle has automated contract tests but still needs testing on a real HA installation. This is a custom repository, not a default HACS catalog entry.
 
 ## What it does
 
@@ -32,34 +32,42 @@ Studio uses the normal HA editor; it does not provide a separate card editor. Ch
 
 ## Install with HACS
 
-1. In HACS, open the menu → **Custom repositories**.
-2. Add `https://github.com/krleas/ha-screen-studio` as category **Dashboard** (called **Plugin** in older HACS versions).
-3. Find **HA Screen Studio by Kopterworx** and download it. Enable beta releases if HACS does not offer the prerelease; the default branch can also be used for testing.
-4. Confirm a JavaScript module resource exists at `/hacsfiles/ha-screen-studio/ha-screen-studio.js`. HACS normally registers it. If missing, add it under Settings → Dashboards → Resources as **JavaScript Module**.
-5. Create an empty dashboard called **Screen Studio** with URL path `screen-studio` and show it in the sidebar. Take control if Home Assistant initially creates a generated dashboard.
-6. In its raw configuration editor, paste:
+Requires Home Assistant **2026.9 or newer**, HACS and an administrator account.
 
-```yaml
-kiosk_mode:
-  hide_header: true
-views:
-  - title: Screen Studio
-    path: studio
-    type: panel
-    cards:
-      - type: custom:ha-screen-studio
-```
+1. Open HACS → menu → **Custom repositories**.
+2. Add `https://github.com/krleas/ha-screen-studio` with type **Integration**.
+3. Download **HA Screen Studio by Kopterworx**, version **0.2.0-beta.1** or newer. Enable beta versions if needed.
+4. Restart Home Assistant once, then refresh the browser.
+5. Open **Settings → Devices & services → Add integration**. Search for **HA Screen Studio**, select it and confirm.
+6. Open **Screen Studio** in the left sidebar and choose your own dashboard.
 
-The `kiosk_mode` block hides only the outer Studio dashboard's top bar. The HA sidebar remains available. Omit that block if you want the outer bar visible.
+No YAML, manually created Studio dashboard, JavaScript resource, IP address or access token is required. The sidebar entry is visible to administrators. Dashboard selection is remembered in this browser; its selector folds away after selection. Use the **Dashboard** button at the end of the toolbar to change it. **Preview** stays first.
 
-7. Reload the browser and open Screen Studio from the sidebar.
-8. Choose **your dashboard** in the Dashboard selector. You can also enter a local path such as `/lovelace/home` and click **Open**. No HA IP address, API token or separate login is needed.
+HACS downloads the files; the Add integration step enables the sidebar. These are separate steps. See [HACS integration documentation](https://www.hacs.dev/docs/use/repositories/type/integration/).
 
-The dashboard list comes from panels accessible to your current HA user. The Studio host dashboard is excluded to avoid opening Studio inside itself. If a dashboard does not appear, enter its local path directly.
+### Upgrading from 0.1 Dashboard/Plugin beta
 
-## Manual installation
+Version 0.1 was a dashboard card; version 0.2 is an integration. Updating the old Dashboard entry alone does not install the integration.
 
-Copy `dist/ha-screen-studio.js` into `/config/www/ha-screen-studio.js`, then register `/local/ha-screen-studio.js?v=0.1.0-beta.1` as a JavaScript Module resource. Follow steps 5–8 above. Change the version query when updating a manually installed file to avoid stale browser caches.
+1. Back up your HA configuration. Keep the old working Studio dashboard until the new panel is verified.
+2. In HACS, remove the old Screen Studio **Dashboard** repository entry, then add this repository again as **Integration** and follow the installation above. HACS may remove the old downloaded card file when uninstalling, so that old card can be temporarily unavailable.
+3. Verify the new **Screen Studio** sidebar entry at `/ha-screen-studio` before optionally removing your old manually created Studio dashboard/resource.
+
+The integration does not delete or rewrite existing dashboards, resources or kiosk settings. Browser preferences use the same storage keys, so they remain available on the same HA origin and browser profile.
+
+### Manual installation
+
+Copy the entire `custom_components/ha_screen_studio` folder from this repository to `/config/custom_components/ha_screen_studio`. Restart HA, then follow steps 5–6 above. All runtime files, including `www/ha-screen-studio.js`, must be copied together.
+
+The legacy `dist/ha-screen-studio.js` card remains available for existing manual setups as `custom:ha-screen-studio`; it is not needed for the integration installation.
+
+### Troubleshooting installation
+
+- Integration missing from Add integration: confirm the folder exists under `custom_components`, restart HA after downloading, then refresh the browser.
+- Studio not in the sidebar: use an administrator account and confirm the integration was added, not just downloaded.
+- URL conflict: an existing panel uses `/ha-screen-studio`. Give that existing panel a different URL, then retry setup. Studio never overwrites it.
+- Old layout after update: refresh the browser cache. Python integration updates require an HA restart.
+- Menu hiding does not work: install and register [kiosk-mode](https://github.com/NemesisRE/kiosk-mode). It is optional for preview itself.
 
 ## Presets and pixels
 
@@ -102,12 +110,13 @@ Node.js 20 or later; no npm dependencies:
 npm run build
 npm test
 npm run check
+python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Edit `src/studio.html` and `src/card.js`, rebuild, and commit `dist/ha-screen-studio.js` with the sources. The standalone HTML prototype is not shipped as a second installation dependency: the distribution is a single bundled module.
+Edit `src/studio.html` and `src/card.js`, rebuild, and commit both generated modules (`dist/ha-screen-studio.js` and `custom_components/ha_screen_studio/www/ha-screen-studio.js`). Python tests use mocked HA APIs; they do not replace a real-instance installation test. The integration is local only and creates no entities.
 
 ## Support
 
-Free and open source under the MIT license. If it helps you, star the repository, test a release or report a useful issue. GitHub Sponsors setup for [krleas](https://github.com/krleas) is being prepared; a funding declaration does not mean payouts are activated.
+Free and open source under the MIT license. If it helps you, star the repository, test a release or report a useful issue. The GitHub Sponsors application for [krleas](https://github.com/krleas) is pending approval.
 
 Created by **Kopterworx**. This community project is not affiliated with Home Assistant, HACS, Shelly, Samsung or Apple.
