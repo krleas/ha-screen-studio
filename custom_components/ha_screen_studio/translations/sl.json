@@ -1,0 +1,14 @@
+{
+  "title": "HA Screen Studio by Kopterworx",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nastavi HA Screen Studio",
+        "description": "Dodaj Screen Studio v stranski meni Home Assistanta za administratorje. Dashboard, YAML, IP naslov ali dostopni žeton niso potrebni. Svoj dashboard izbereš ob odprtju Studia."
+      }
+    },
+    "abort": {
+      "already_configured": "Screen Studio je že nastavljen. Odpri ga v stranskem meniju."
+    }
+  }
+}
