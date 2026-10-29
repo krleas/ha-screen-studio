@@ -1,6 +1,10 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 const html = await readFile(new URL('../src/studio.html', import.meta.url), 'utf8');
 const wrapper = await readFile(new URL('../src/card.js', import.meta.url), 'utf8');
+const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+const bundle = '// HA Screen Studio by Kopterworx · ' + version + ' · MIT\nconst STUDIO_HTML = ' + JSON.stringify(html) + ';\n' + wrapper;
 await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
-await writeFile(new URL('../dist/ha-screen-studio.js', import.meta.url), '// HA Screen Studio by Kopterworx · 0.1.0-beta.1 · MIT\nconst STUDIO_HTML = ' + JSON.stringify(html) + ';\n' + wrapper);
-console.log('Built dist/ha-screen-studio.js');
+await writeFile(new URL('../dist/ha-screen-studio.js', import.meta.url), bundle);
+await mkdir(new URL('../custom_components/ha_screen_studio/www/', import.meta.url), { recursive: true });
+await writeFile(new URL('../custom_components/ha_screen_studio/www/ha-screen-studio.js', import.meta.url), bundle);
+console.log('Built legacy module and integration frontend · ' + version);
