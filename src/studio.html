@@ -86,40 +86,47 @@
     #emptyState { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center; background:#111720; color:#aab8c9; }
     #emptyState b { font-size:32px; color:#eef1f6; }
     #emptyState p { font-size:18px; max-width:500px; }
-    /* Reflow complete control groups instead of stranding presets at the right. */
-    .bar { min-width:0; max-height:60dvh; overflow-y:auto; overflow-x:hidden; }
-    .top, .brand, .controls, .dashboard-picker, .custom-presets { min-width:0; }
+    /* Keep saved and built-in presets together, without a separate status row. */
+    .bar { min-width:0; max-height:60dvh; overflow-y:auto; overflow-x:hidden; gap:12px; }
+    .top, .brand, .controls, .dashboard-picker { min-width:0; }
     .controls > *, .setting-row > * { flex-shrink:0; }
-    @media (max-width:1800px) {
-      .settings { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px 18px; }
-      .preset-group { grid-column:1 / -1; margin-left:0; flex-direction:row; align-items:center; gap:12px; }
-      .preset-buttons { min-height:36px; }
-      .custom-presets .status-row { flex:1 1 300px; min-width:0; }
+    .preview-control { display:flex; align-items:center; gap:8px; }
+    .preview-control .mode-info { order:-1; text-align:right; }
+    .mode-info { width:140px; font-size:10px; line-height:1.45; color:#9bb8c7; }
+    .settings { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px 20px; }
+    .presets-strip { display:flex; align-items:center; flex-wrap:wrap; gap:10px 20px; }
+    .preset-group { display:flex; align-items:center; gap:10px; margin:0; min-width:0; }
+    .preset-buttons { flex-wrap:wrap; }
+    .custom-presets { border:0; padding:0; gap:7px; flex-wrap:nowrap; min-width:0; }
+    .custom-presets .group-label { line-height:1.25; margin:0 3px 0 0; }
+    .custom-presets select { width:153px; }
+    .editor-note { flex:0 1 auto; margin-left:auto; line-height:1.4; }
+    .editor-note span { display:block; white-space:nowrap; }
+    @media (max-width:1450px) {
+      .top { gap:10px; }
+      .controls { gap:5px; }
+      .controls button, .controls .link { padding-inline:8px; }
+      .mode-info { width:122px; }
+      .editor-note { max-width:none; }
     }
-    @media (max-width:1320px) {
-      .top { align-items:flex-start; }
-      .controls { flex:1 1 100%; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
-      .controls > * { min-width:0; padding-inline:7px; }
-      .controls > * span { white-space:normal; text-align:center; }
+    @media (max-width:1200px) {
+      .controls { flex:1 1 100%; }
       .settings { grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .custom-presets .status-row { justify-content:flex-start; text-align:left; }
     }
     @media (max-width:760px) {
-      .controls { grid-template-columns:repeat(4,minmax(0,1fr)); }
       .settings { gap:12px; }
       .dimensions { gap:4px; }
       .dimensions label { gap:4px; }
       .dimensions input { width:62px; }
-      .preset-group { flex-direction:column; align-items:flex-start; gap:7px; }
+      .preset-group { flex-wrap:wrap; }
+      .custom-presets { flex-wrap:wrap; }
       #dashboardHint { flex-basis:100%; }
     }
     @media (max-width:620px) {
-      .controls { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .settings { grid-template-columns:minmax(0,1fr); }
       .setting-row { flex-wrap:wrap; }
       .dashboard-picker select, .dashboard-picker input, .custom-presets select { max-width:100%; min-width:0; }
-      .dashboard-picker .group-label, .custom-presets > .group-label { flex-basis:100%; }
-      .custom-presets .status-row { margin-left:0; }
+      .dashboard-picker .group-label { flex-basis:100%; }
       .bar { max-height:65dvh; }
     }
   </style>
@@ -129,9 +136,9 @@
     <div class="top">
       <div class="brand"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><div><b>HA Screen Studio</b><span class="byline">by Kopterworx</span></div><span class="chip" id="viewportLabel">LCD · 1920 × 1200</span></div>
       <div class="controls">
-        <button type="button" id="preview" class="active" aria-pressed="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>Preview</span></button>
-        <button type="button" id="toggleHaMenu" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="haMenuLabel">HA top bar: OFF</span></button>
-        <button type="button" id="toggleHaSidebar" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg><span id="haSidebarLabel">HA left bar: OFF</span></button>
+        <div class="preview-control"><button type="button" id="preview" class="active" aria-pressed="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>Preview</span></button><span id="modeInfo" class="mode-info" role="status">Dashboard preview</span></div>
+        <button type="button" id="toggleHaMenu" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="haMenuLabel">Top bar: OFF</span></button>
+        <button type="button" id="toggleHaSidebar" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg><span id="haSidebarLabel">Left bar: OFF</span></button>
         <button type="button" id="edit" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6Z M14 5l5 5"/></svg><span>Edit cards</span></button>
         <button type="button" id="refresh" title="Reload the dashboard"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1"/></svg><span>Refresh</span></button>
         <a class="link" id="normalHa" href="#" aria-disabled="true" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg><span>Open in HA</span></a>
@@ -175,7 +182,10 @@
           <button type="button" id="applyPhoneSize" ><span>Apply</span></button>
         </div>
       </section>
-      <section class="setting-group preset-group" aria-label="Screen size presets">
+
+    </div>
+    <div class="presets-strip">
+      <section class="preset-group" aria-label="Screen size presets">
         <span class="group-label">PRESETS</span>
         <div class="setting-row preset-buttons">
           <button type="button" id="preset1080" title="LCD · 1920 × 1080 px">1920 × 1080</button>
@@ -186,6 +196,15 @@
           <button type="button" id="presetIphone" title="Approximate mobile viewport · 393 × 852 CSS px">iPhone</button>
         </div>
       </section>
+    <div class="custom-presets" role="group" aria-label="Custom presets">
+      <span class="group-label">CUSTOM<br>PRESETS</span>
+      <select id="customPreset" aria-label="Saved custom preset"><option value="">Select a saved preset</option></select>
+      <button type="button" id="loadCustom">Load</button>
+      <button type="button" id="saveCustom">Save current</button>
+      <button type="button" id="deleteCustom">Delete</button>
+
+    </div>
+      <p class="note editor-note"><span>Editing uses the Home Assistant editor.</span><span>Switch to Preview to check the final layout.</span></p>
     </div>
     <div class="dashboard-picker" id="dashboardPicker" role="group" aria-label="Choose your dashboard">
       <span class="group-label">DASHBOARD</span>
@@ -194,14 +213,7 @@
       <button type="button" id="openDashboard">Open</button>
       <span id="dashboardHint" class="note">Choose your dashboard or enter its path.</span>
     </div>
-    <div class="custom-presets" role="group" aria-label="Custom presets">
-      <span class="group-label">CUSTOM PRESETS</span>
-      <select id="customPreset" aria-label="Saved custom preset"><option value="">Select a saved preset</option></select>
-      <button type="button" id="loadCustom">Load</button>
-      <button type="button" id="saveCustom">+ Save current</button>
-      <button type="button" id="deleteCustom">Delete</button>
-      <div class="status-row"><span id="modeInfo">Dashboard preview</span><p class="note">Editing uses the Home Assistant editor. Switch to Preview to check the final layout.</p></div>
-    </div>
+
   </header>
   <main id="stage" class="stage">
     <div id="mount" class="mount">
@@ -305,10 +317,10 @@
       let showHaSidebar = false;
       try { showHaSidebar = localStorage.getItem(SIDEBAR_KEY) === 'true'; } catch (_) {}
       const updateMenuButton = () => {
-        $('haSidebarLabel').textContent = 'HA left bar: ' + (showHaSidebar ? 'ON' : 'OFF');
+        $('haSidebarLabel').textContent = 'Left bar: ' + (showHaSidebar ? 'ON' : 'OFF');
         $('toggleHaSidebar').classList.toggle('active', showHaSidebar);
         $('toggleHaSidebar').setAttribute('aria-pressed', String(showHaSidebar));
-        $('haMenuLabel').textContent = 'HA top bar: ' + (showHaMenu ? 'ON' : 'OFF');
+        $('haMenuLabel').textContent = 'Top bar: ' + (showHaMenu ? 'ON' : 'OFF');
         $('toggleHaMenu').classList.toggle('active', showHaMenu);
         $('toggleHaMenu').setAttribute('aria-pressed', String(showHaMenu));
       };
@@ -415,7 +427,7 @@
           button.classList.toggle('active', device === kind);
           button.setAttribute('aria-pressed', String(device === kind));
         }
-        if (mode === 'preview') $('modeInfo').textContent = 'Preview · Top bar ' + (showHaMenu ? 'ON' : 'OFF') + ' · Left bar ' + (showHaSidebar ? 'ON' : 'OFF') + ' · ' + label;
+        if (mode === 'preview') $('modeInfo').textContent = 'Top bar ' + (showHaMenu ? 'ON' : 'OFF') + ' · Left bar ' + (showHaSidebar ? 'ON' : 'OFF') + ' · ' + label;
       };
       const setMode = next => {
         if (next === mode) return;
