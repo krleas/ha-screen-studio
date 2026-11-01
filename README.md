@@ -10,6 +10,10 @@ Preview and edit your Home Assistant dashboards at LCD, tablet and mobile sizes,
 
 *Screenshots show fictional demo data.*
 
+## Why Screen Studio?
+
+Screen Studio started with a simple problem: while editing on a PC, it was hard to picture how the dashboard would actually look on a wall display or phone. It brings the target viewport onto your desktop, so you can see the layout at the intended dimensions while you work.
+
 ## What you can do
 
 - Switch between LCD and mobile sizes, rotate the screen or enter custom dimensions.
@@ -27,21 +31,21 @@ You need **Home Assistant 2026.9+**, **HACS**, an administrator account and an e
 
 ## Installation
 
-**Current release: v0.2.0-beta.3.** This is a testing release, available as a custom HACS repository.
+**First regular release: v0.2.0.** Available as a custom HACS repository; it is not yet in the default catalog.
 
 1. In **HACS → menu → Custom repositories**, add `https://github.com/krleas/ha-screen-studio` as **Integration**.
-2. Download **HA Screen Studio by Kopterworx**. Select the tagged **v0.2.0-beta.3** release under **Need a different version?**, rather than `main` or a short commit ID.
+2. Download **HA Screen Studio by Kopterworx**, version **v0.2.0** or newer.
 3. Restart Home Assistant once and refresh your browser.
 4. Go to **Settings → Devices & services → Add integration**, select **HA Screen Studio** and confirm.
 5. Open **Screen Studio** in the sidebar and choose your dashboard.
 
-**For beta updates:** enable this repository's **Pre-release** switch in HACS. If it is disabled, enable it under **Settings → Devices & services → Entities** (include disabled entities), then turn it on. [Detailed instructions](https://github.com/krleas/ha-screen-studio/blob/main/docs/REFERENCE.md#beta-update-tracking--important-for-testers).
+Already using beta.2 or beta.3? Update to **v0.2.0** in HACS and restart HA once. No integration re-add is needed. **Pre-release tracking is not required for regular releases.**
 
-No YAML, manual Studio dashboard or access token is needed. Settings are saved in this browser. **Editing saves real changes, and dashboard controls operate real devices.**
+No YAML, manual Studio dashboard or access token is needed. The installed version appears next to **by Kopterworx**. Settings are saved in this browser. **Editing saves real changes, and dashboard controls operate real devices.**
 
 ## Need help?
 
-- Menu controls do nothing? Check that **kiosk-mode is installed and loaded**.
+- Menu controls do nothing? Check that **kiosk-mode is installed and loaded**. Studio now shows a setup link if it cannot detect the loaded add-on.
 - [Troubleshooting, old-beta migration and manual installation](https://github.com/krleas/ha-screen-studio/blob/main/docs/REFERENCE.md).
 - [Report a problem](https://github.com/krleas/ha-screen-studio/issues) with your HA, Studio and browser versions. Remove private details from screenshots.
 - [Technical details and development](https://github.com/krleas/ha-screen-studio/blob/main/docs/REFERENCE.md#development).

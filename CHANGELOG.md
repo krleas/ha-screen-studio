@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 — 2026-11-02
+
+First regular release after the beta series.
+
+- Displays the installed Studio version beside the byline.
+- Checks the selected dashboard for a loaded kiosk-mode runtime, with a startup grace period, clear setup link and retry button. Distinguishes missing, failed-start and unverified dashboards.
+- Includes the approved compact desktop toolbar, independent zoom/preset memory and automatic integration sidebar setup.
+- Shortens the HACS/GitHub overview, explains why Studio was created, and keeps advanced instructions in a separate reference.
+- Includes the active GitHub Sponsors coffee banner.
+- Regular releases no longer require enabling HACS Pre-release tracking.
+
+Update existing beta.2/beta.3 installations through HACS, restart HA once and refresh the browser. No dashboard changes or integration re-add are needed. The frontend URL is versioned as 0.2.0 to avoid the old cached bundle.
+
 ## 0.2.0-beta.3 — 2026-10-30
 
 - Compact toolbar: built-in and custom presets share a row when space allows.
