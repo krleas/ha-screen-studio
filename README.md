@@ -137,6 +137,10 @@ Edit `src/studio.html` and `src/card.js`, rebuild, and commit both generated mod
 
 ## Support development ❤️
 
+<a href="https://github.com/sponsors/krleas">
+  <img src="https://raw.githubusercontent.com/krleas/ha-screen-studio/main/docs/images/support-banner.png" alt="Buy me a coffee — Support HA Screen Studio via GitHub Sponsors" width="520">
+</a>
+
 HA Screen Studio is free and open source under the MIT license. If you find it useful, you can support its development through [GitHub Sponsors](https://github.com/sponsors/krleas). Thank you! ❤️
 
 [**Sponsor Kopterworx ❤️**](https://github.com/sponsors/krleas) — choose monthly or one-time support, including a custom amount.
