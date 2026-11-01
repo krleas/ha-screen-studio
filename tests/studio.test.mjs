@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../src/studio.html', import.meta.url), 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 function launch(memory = new Map()) {
+  const timers = new Map(); let timerId = 0;
   const makeNode = () => ({ value: '', style: {}, children: [], events: {}, hidden: false, clientWidth: 1400, clientHeight: 1000,
     classList: { toggle() {} }, setAttribute() {}, removeAttribute() {},
     addEventListener(name, handler) { this.events[name] = handler; },
@@ -21,8 +22,9 @@ function launch(memory = new Map()) {
     getElementById(id) { assert.ok(nodes[id], `Missing DOM node: ${id}`); return nodes[id]; } };
   vm.runInNewContext(script, { document, window, location: { search: '' }, URL, URLSearchParams,
     localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k, v) => memory.set(k, v) },
+    setTimeout: fn => { timers.set(++timerId, fn); return timerId; }, clearTimeout: id => timers.delete(id),
     confirm: () => true, alert: m => alerts.push(m), prompt: () => 'Kitchen', requestAnimationFrame: f => f(), console });
-  return { nodes, alerts, memory, window, location };
+  return { nodes, alerts, memory, window, location, tick: () => { const pending = [...timers.values()]; timers.clear(); pending.forEach(fn => fn()); } };
 }
 const click = (n, id) => n[id].events.click();
 const zoom = (n, value) => { n.percent.value = value; n.percent.events.change(); };
@@ -80,4 +82,36 @@ test('dashboard list accepts messages from same-origin parent only', () => {
   window.events.message({ source: window.parent, origin: 'https://example.test', data });
   assert.equal(n.dashboardSelect.children.length, 2);
   assert.equal(n.dashboardSelect.children[1].textContent, '<b>Home</b>');
+});
+
+const chooseTestDashboard = run => { run.nodes.dashboardPath.value = '/lovelace/home'; click(run.nodes, 'openDashboard'); };
+const waitForKioskCheck = run => { for (let i = 0; i < 20; i++) run.tick(); };
+test('kiosk warning only appears after loading grace period; detects missing runtime', () => {
+  const run = launch();
+  run.nodes.dashboard.contentDocument = { readyState: 'complete', querySelector: () => ({}), scripts: [] };
+  chooseTestDashboard(run);
+  assert.equal(run.nodes.kioskNotice.hidden, true);
+  run.tick(); assert.equal(run.nodes.kioskNotice.hidden, true);
+  waitForKioskCheck(run);
+  assert.equal(run.nodes.kioskNotice.hidden, false);
+  assert.match(run.nodes.kioskNoticeText.textContent, /not detected/);
+  run.nodes.dashboard.contentWindow.KioskMode = {};
+  click(run.nodes, 'checkKiosk'); run.tick();
+  assert.equal(run.nodes.kioskNotice.hidden, true);
+});
+test('late kiosk startup avoids false warning; navigation clears stale check', () => {
+  const run = launch(); chooseTestDashboard(run);
+  run.tick(); run.nodes.dashboard.contentWindow.KioskMode = {};
+  waitForKioskCheck(run); assert.equal(run.nodes.kioskNotice.hidden, true);
+  delete run.nodes.dashboard.contentWindow.KioskMode;
+  run.nodes.dashboard.contentDocument = { readyState: 'complete', querySelector: () => ({}), scripts: [{src:'/hacsfiles/kiosk-mode/kiosk-mode.js'}] };
+  click(run.nodes, 'checkKiosk'); waitForKioskCheck(run);
+  assert.match(run.nodes.kioskNoticeText.textContent, /has not started/);
+});
+test('unloaded or inaccessible dashboards do not report kiosk as missing', () => {
+  const run = launch(); chooseTestDashboard(run); waitForKioskCheck(run);
+  assert.match(run.nodes.kioskNoticeText.textContent, /Could not verify/);
+  Object.defineProperty(run.nodes.dashboard, 'contentWindow', { get() { throw new Error('cross origin'); } });
+  click(run.nodes, 'checkKiosk'); waitForKioskCheck(run);
+  assert.match(run.nodes.kioskNoticeText.textContent, /Could not verify/);
 });
