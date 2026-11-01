@@ -2,13 +2,17 @@
 
 [Back to the quick installation guide](https://github.com/krleas/ha-screen-studio#installation)
 
-### Beta update tracking — important for testers
+### Release and beta updates
 
-This project currently publishes **pre-releases**. In HACS, enable **Pre-release** for **HA Screen Studio by Kopterworx** so update checks track the tagged beta release. Downloading a beta manually does not necessarily enable beta tracking.
+The first regular release is **v0.2.0**. HACS can track regular releases without enabling Pre-release. Existing beta.2/beta.3 installations can update to v0.2.0 normally and restart HA once; there is no need to re-add the integration.
 
-HACS also provides a **Pre-release** switch entity for this repository. If it is disabled, find it under **Settings → Devices & services → Entities**, include disabled entities in the filters, enable that specific entity, then turn its switch on. See [HACS pre-release switch documentation](https://www.hacs.dev/docs/use/entities/switch/).
+Only enable the repository's **Pre-release** switch if you want future beta versions as well. The switch is provided by HACS; see [HACS documentation](https://www.hacs.dev/docs/use/entities/switch/). Earlier betas could show a short default-branch commit ID when beta tracking was off and no regular release existed. Install tagged releases rather than `main` for normal use.
 
-If an update offers a short commit ID immediately after installing a beta, check this setting first. With beta tracking off and no regular release available, HACS can fall back to the default branch's latest commit. A README change can then look like an update. Do not install `main` just to dismiss that notice; enable beta tracking instead. Studio cannot change a user's HACS update preferences automatically.
+### kiosk-mode detection
+
+After a dashboard loads, Studio checks that dashboard's `window.KioskMode` runtime, as exposed by kiosk-mode v14/v15. It waits up to 20 seconds for startup. A script URL alone is not treated as proof that the add-on started successfully.
+
+A missing or failed runtime displays a setup link and **Check again**. A dashboard that has not loaded or cannot be inspected displays an unable-to-verify notice instead. The warning does not install anything or modify kiosk-mode settings. Detection confirms the runtime is present; user/dashboard kiosk rules can still affect menu visibility.
 
 ### Upgrading from 0.1 Dashboard/Plugin beta
 
