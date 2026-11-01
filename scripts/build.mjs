@@ -1,7 +1,8 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
-const html = await readFile(new URL('../src/studio.html', import.meta.url), 'utf8');
+const sourceHtml = await readFile(new URL('../src/studio.html', import.meta.url), 'utf8');
 const wrapper = await readFile(new URL('../src/card.js', import.meta.url), 'utf8');
 const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+const html = sourceHtml.replaceAll('__STUDIO_VERSION__', version);
 const bundle = '// HA Screen Studio by Kopterworx · ' + version + ' · MIT\nconst STUDIO_HTML = ' + JSON.stringify(html) + ';\n' + wrapper;
 await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
 await writeFile(new URL('../dist/ha-screen-studio.js', import.meta.url), bundle);
