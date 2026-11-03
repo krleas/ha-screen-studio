@@ -31,15 +31,17 @@ You need **Home Assistant 2026.9+**, **HACS**, an administrator account and an e
 
 ## Installation
 
-**First regular release: v0.2.0.** Available as a custom HACS repository; it is not yet in the default catalog.
+**Available in the HACS default catalog.** Current regular release: **v0.2.1**.
 
-1. In **HACS → menu → Custom repositories**, add `https://github.com/krleas/ha-screen-studio` as **Integration**.
-2. Download **HA Screen Studio by Kopterworx**, version **v0.2.0** or newer.
+1. Open **HACS** and search for **HA Screen Studio** (category: **Integration**).
+2. Download **HA Screen Studio by Kopterworx**.
 3. Restart Home Assistant once and refresh your browser.
 4. Go to **Settings → Devices & services → Add integration**, select **HA Screen Studio** and confirm.
 5. Open **Screen Studio** in the sidebar and choose your dashboard.
 
-Already using beta.2 or beta.3? Update to **v0.2.0** in HACS and restart HA once. No integration re-add is needed. **Pre-release tracking is not required for regular releases.**
+**Can't find it yet?** A newly approved repository can take up to 8 hours to appear in HACS. As a fallback, open **HACS → menu → Custom repositories**, add `https://github.com/krleas/ha-screen-studio` as **Integration**, then follow steps 2–5 above.
+
+Already using a beta or custom-repository installation? Update to the latest regular release in HACS and restart HA once. No integration re-add is needed. **Pre-release tracking is not required for regular releases.**
 
 No YAML, manual Studio dashboard or access token is needed. The installed version appears next to **by Kopterworx**. Settings are saved in this browser. **Editing saves real changes, and dashboard controls operate real devices.**
 
