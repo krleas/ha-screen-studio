@@ -31,7 +31,7 @@ You need **Home Assistant 2026.9+**, **HACS**, an administrator account and an e
 
 ## Installation
 
-**Available in the HACS default catalog.** Current regular release: **v0.2.1**.
+**Available in the HACS default catalog.** Current regular release: **v0.2.2**.
 
 1. Open **HACS** and search for **HA Screen Studio** (category: **Integration**).
 2. Download **HA Screen Studio by Kopterworx**.
