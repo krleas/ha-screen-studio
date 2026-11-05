@@ -19,7 +19,7 @@ A missing or failed runtime displays a setup link and **Check again**. A dashboa
 Version 0.1 was a dashboard card; version 0.2 is an integration. Updating the old Dashboard entry alone does not install the integration.
 
 1. Back up your HA configuration. Keep the old working Studio dashboard until the new panel is verified.
-2. In HACS, remove the old Screen Studio **Dashboard** repository entry, then add this repository again as **Integration** and follow the installation above. HACS may remove the old downloaded card file when uninstalling, so that old card can be temporarily unavailable.
+2. In HACS, remove the old Screen Studio **Dashboard** repository entry, then search for **HA Screen Studio** in the **Integration** category and follow the [installation instructions](../README.md#installation). HACS may remove the old downloaded card file when uninstalling, so that old card can be temporarily unavailable.
 3. Verify the new **Screen Studio** sidebar entry at `/ha-screen-studio` before optionally removing your old manually created Studio dashboard/resource.
 
 The integration does not delete or rewrite existing dashboards, resources or kiosk settings. Browser preferences use the same storage keys, so they remain available on the same HA origin and browser profile.
